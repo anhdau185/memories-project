@@ -1,7 +1,7 @@
 import * as api from 'api';
 import { FETCH_ALL_POSTS } from 'actions/types';
 
-export default () => async dispatch => {
+const fetchAllPosts = (onCompletion = null) => async dispatch => {
     try {
         const { data } = await api.fetchPosts();
         dispatch({
@@ -10,5 +10,11 @@ export default () => async dispatch => {
         });
     } catch (error) {
         console.error(error.message);
+    } finally {
+        if (onCompletion && typeof onCompletion === 'function') {
+            onCompletion();
+        }
     }
 };
+
+export default fetchAllPosts;
