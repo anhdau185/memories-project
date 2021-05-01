@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FileBase64 from 'react-file-base64/build/build';
 import { Paper, TextField, Button, Typography } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import createPost from 'actions/createPost';
+import updatePost from 'actions/updatePost';
+import removeCurrentPost from 'actions/removeCurrentPost';
 import useStyles from './styles';
 
 const Form = () => {
@@ -13,6 +15,25 @@ const Form = () => {
         tags: '',
         selectedFile: ''
     });
+
+    const currentPost = useSelector(state => state.currentPost);
+
+    useEffect(() => {
+        if (currentPost) {
+            setPostData({
+                ...currentPost,
+                tags: currentPost.tags.join(', ')
+            });
+        } else {
+            setPostData({
+                author: '',
+                title: '',
+                message: '',
+                tags: '',
+                selectedFile: ''
+            });
+        }
+    }, [currentPost]);
 
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -27,17 +48,19 @@ const Form = () => {
         });
     };
 
-    const processFormData = ({ author, title, message, tags, selectedFile }) => ({
-        author,
-        title,
-        message,
-        tags: tags.trim().replaceAll(' ', '').split(','),
-        selectedFile
-    });
-
     const handleSubmit = e => {
         e.preventDefault();
-        dispatch(createPost(processFormData(postData), clearForm));
+
+        const standardizedData = {
+            ...postData,
+            tags: postData.tags.trim().replace(/[\s#]/g, '').split(',')
+        };
+
+        if (currentPost) {
+            dispatch(updatePost(currentPost._id, standardizedData));
+        } else {
+            dispatch(createPost(standardizedData, clearForm));
+        }
     };
 
     return (
@@ -48,7 +71,26 @@ const Form = () => {
                 className={classes.form}
                 onSubmit={handleSubmit}
             >
-                <Typography variant="h6">Create a Memory</Typography>
+                <Typography variant="h6" align="center" style={{ marginBottom: '4px', width: '100%' }}>
+                    {!currentPost ? 'Create' : 'Edit'} a Memory
+                </Typography>
+                {currentPost
+                    ? (<>
+                        <Typography variant="body2" align="center" style={{ marginBottom: '8px', width: '100%' }}>
+                            Now editing <b>{currentPost.title}</b>
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            size="small"
+                            style={{ marginBottom: '5px' }}
+                            onClick={() => dispatch(removeCurrentPost())}
+                        >
+                            Create new post
+                        </Button>
+                    </>)
+                    : null
+                }
                 <TextField
                     name="author"
                     label="Author"

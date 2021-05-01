@@ -11,7 +11,7 @@ const createPost = (post, onCompletion = null) => async dispatch => {
     } catch (error) {
         console.error(error.message);
     } finally {
-        if (onCompletion && typeof onCompletion === 'function') {
+        if (typeof onCompletion === 'function') {
             onCompletion();
         }
     }

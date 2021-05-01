@@ -1,16 +1,17 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Card, CardActions, CardContent, CardMedia, Button, Typography } from '@material-ui/core';
 import moment from 'moment';
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import DeleteIcon from '@material-ui/icons/Delete';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import setCurrentPost from 'actions/setCurrentPost';
+import deletePost from 'actions/deletePost';
 import useStyles from './styles';
 
 const Post = ({ post }) => {
+    const dispatch = useDispatch();
     const classes = useStyles();
-
-    if (typeof post.tags === 'undefined')
-        console.log(post);
 
     return (
         <Card className={classes.card}>
@@ -24,8 +25,12 @@ const Post = ({ post }) => {
                 <Typography variant="body2">{moment(post.createAt).fromNow()}</Typography>
             </div>
             <div className={classes.overlay2}>
-                <Button style={{ color: 'white' }} size="small" onClick={() => { }}>
-                    <MoreHorizIcon fontSize="default" />
+                <Button
+                    style={{ color: 'white' }}
+                    size="small"
+                    onClick={() => dispatch(setCurrentPost(post))}
+                >
+                    Edit
                 </Button>
             </div>
             <div className={classes.details}>
@@ -34,19 +39,25 @@ const Post = ({ post }) => {
                 </Typography>
             </div>
             <CardContent>
-                <Typography className={classes.title} variant="h5" gutterBottom>
-                    {post.message}
-                </Typography>
+                <Typography variant="h5" gutterBottom>{post.title}</Typography>
+                <Typography variant="body1" gutterBottom>{post.message}</Typography>
             </CardContent>
-            <CardActions>
-                <Button size="small" color="primary" onClick={() => { }}>
-                    <ThumbUpAltIcon fontSize="small" />
-                    Like
-                    {post.likeCount}
+            <CardActions className={classes.cardActions}>
+                <Button size="small" color="secondary" onClick={() => { }}>
+                    {post.likeCount > 0
+                        ? <FavoriteIcon fontSize="default" />
+                        : <FavoriteBorderIcon fontSize="default" />
+                    }
+                    &nbsp;{post.likeCount}
                 </Button>
-                <Button size="small" color="primary" onClick={() => { }}>
-                    <DeleteIcon fontSize="small" />
-                    Delete
+                <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => {
+                        if (window.confirm('Delete this post?')) dispatch(deletePost(post._id));
+                    }}
+                >
+                    <DeleteIcon fontSize="default" />
                 </Button>
             </CardActions>
         </Card>

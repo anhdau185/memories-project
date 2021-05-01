@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import postRoutes from './routes/posts.js';
+import postsRoutes from './routes/posts.js';
 import { CONNECTION_URL } from './connection/index.js';
 
 /* Determine port */
@@ -17,8 +17,9 @@ app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
 app.use(cors());
 
 /* Using routes */
-app.use('/posts', postRoutes);
+app.use('/posts', postsRoutes);
 
+/* Connect to MongoDB */
 mongoose.connect(CONNECTION_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
