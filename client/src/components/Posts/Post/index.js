@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Card, CardActions, CardContent, CardMedia, Button, Typography } from '@material-ui/core';
 import moment from 'moment';
@@ -10,6 +10,7 @@ import deletePost from 'actions/deletePost';
 import useStyles from './styles';
 
 const Post = ({ post }) => {
+    const [createdAtHovered, setCreatedAtHovered] = useState(false);
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -22,7 +23,17 @@ const Post = ({ post }) => {
             />
             <div className={classes.overlay}>
                 <Typography variant="h6">{post.author}</Typography>
-                <Typography variant="body2">{moment(post.createAt).fromNow()}</Typography>
+                <Typography
+                    variant="body2"
+                    style={{ cursor: 'default' }}
+                    onMouseEnter={() => setCreatedAtHovered(true)}
+                    onMouseLeave={() => setCreatedAtHovered(false)}
+                >
+                    {!createdAtHovered
+                        ? moment(post.createdAt).fromNow()
+                        : moment(post.createdAt).format('DD/MM/YYYY hh:mm')
+                    }
+                </Typography>
             </div>
             <div className={classes.overlay2}>
                 <Button
