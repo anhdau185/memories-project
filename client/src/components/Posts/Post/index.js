@@ -7,12 +7,14 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import setCurrentPost from 'actions/setCurrentPost';
 import deletePost from 'actions/deletePost';
+import likePost from 'actions/likePost';
 import useStyles from './styles';
 
 const Post = ({ post }) => {
     const [createdAtHovered, setCreatedAtHovered] = useState(false);
     const dispatch = useDispatch();
     const classes = useStyles();
+    const creationDateTime = moment(post.createdAt).format('MMM D, YYYY h:mm a');
 
     return (
         <Card className={classes.card}>
@@ -31,7 +33,7 @@ const Post = ({ post }) => {
                 >
                     {!createdAtHovered
                         ? moment(post.createdAt).fromNow()
-                        : moment(post.createdAt).format('DD/MM/YYYY hh:mm')
+                        : creationDateTime
                     }
                 </Typography>
             </div>
@@ -51,10 +53,10 @@ const Post = ({ post }) => {
             </div>
             <CardContent>
                 <Typography variant="h5" gutterBottom>{post.title}</Typography>
-                <Typography variant="body1" gutterBottom>{post.message}</Typography>
+                <Typography variant="body2" color="textSecondary">{post.message}</Typography>
             </CardContent>
             <CardActions className={classes.cardActions}>
-                <Button size="small" color="secondary" onClick={() => { }}>
+                <Button size="small" color="secondary" onClick={() => dispatch(likePost(post._id))}>
                     {post.likeCount > 0
                         ? <FavoriteIcon fontSize="default" />
                         : <FavoriteBorderIcon fontSize="default" />

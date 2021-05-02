@@ -73,3 +73,23 @@ export const deletePost = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+export const likePost = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ message: 'No post with the given ID' });
+    }
+
+    try {
+        const post = await PostMessage.findById(id);
+        const updatedPost = await PostMessage.findByIdAndUpdate(id, { likeCount: post.likeCount + 1 }, { new: true });
+
+        res.status(200).json({
+            message: 'Successfully updated the post!',
+            updatedPost
+        });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
